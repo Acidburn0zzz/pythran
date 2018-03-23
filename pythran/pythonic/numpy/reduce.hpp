@@ -120,7 +120,11 @@ namespace numpy
   reduce(E const &expr, types::none_type)
   {
     bool constexpr is_vectorizable =
-        E::is_vectorizable && !std::is_same<typename E::dtype, bool>::value;
+        E::is_vectorizable && !std::is_same<typename E::dtype, bool>::value
+#ifndef __FAST_MATH__
+        && !std::is_floating_point<typename E::dtype>::value
+#endif
+        ;
     reduce_result_type<E> p = utils::neutral<Op, typename E::dtype>::value;
     return reduce_helper<Op, E, is_vectorizable>{}(expr, p);
   }
